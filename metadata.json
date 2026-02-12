@@ -1,0 +1,7 @@
+{
+  "name": "Cognito Growth",
+  "description": "An all-in-one AI power tool for generating websites with real-time editing and high-conversion Meta ad creatives.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
