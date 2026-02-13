@@ -10,6 +10,40 @@ export const getAIInstance = () => {
   return new GoogleGenAI({ apiKey });
 };
 
+export async function* generateWebsiteCodeStream(prompt: string) {
+  const ai = getAIInstance();
+  const systemInstruction = `
+    You are an expert full-stack web developer and UI/UX designer.
+    Generate a complete, high-quality, single-page HTML file based on the user's prompt.
+    1. Use Tailwind CSS via CDN.
+    2. Ensure the design is modern, professional, and mobile-responsive.
+    3. Include high-quality placeholder images from Unsplash (e.g., https://images.unsplash.com/photo-...).
+    4. The output must ONLY be the HTML content. Do not include markdown code blocks or any explanation.
+    5. Add smooth scroll and interactive elements where appropriate.
+  `;
+
+  try {
+    const responseStream = await ai.models.generateContentStream({
+      model: ModelType.WEBSITE,
+      contents: `Build a modern, conversion-optimized landing page for: ${prompt}`,
+      config: {
+        systemInstruction,
+        temperature: 0.7,
+        thinkingConfig: { thinkingBudget: 4000 }
+      },
+    });
+
+    for await (const chunk of responseStream) {
+      if (chunk.text) {
+        yield chunk.text;
+      }
+    }
+  } catch (error) {
+    console.error("Website Generation Stream Error:", error);
+    throw error;
+  }
+}
+
 export const generateWebsiteCode = async (prompt: string): Promise<string> => {
   const ai = getAIInstance();
   const systemInstruction = `
